@@ -1,0 +1,195 @@
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">	
+	<script type='text/javascript' src='https://www.gstatic.com/charts/loader.js'></script>
+	<script type='text/javascript'>
+		// column order: state	county	lat	long
+		var STATE = 0, COUNTY = 1, LAT = 2, LONG = 3;
+		var is_playing = false;
+		var data, view, chart, num_dates, dates;
+		google.charts.load('current', {
+			'packages': ['geochart', 'table'],
+		});
+		google.charts.setOnLoadCallback(drawMarkersMap);
+
+		function drawMarkersMap() {
+			var URL = 'https://docs.google.com/spreadsheets/d/1jLAjzYMcsPo71qu5uBxjT_dAzj8vxZfvnTMR-Xp3-v8/edit#gid=1076558078'
+			var query = new google.visualization.Query(URL);
+			query.send(handleQueryResponse);
+		}
+			
+		function handleQueryResponse(response) {
+			data = response.getDataTable();
+			num_dates = data.getNumberOfColumns() - 4;				
+			dates = []
+			for (var i = 0; i < num_dates; i++) {
+				date = data.getColumnLabel(i + 4);
+				dates.push(date);
+			}
+			console.log(dates);
+
+			chart = new google.visualization.GeoChart(document.getElementById('chart_div'));
+			table = new google.visualization.Table(document.getElementById('table_div'));
+			initSlider();
+				
+			drawTrend();
+		};
+    
+		function draw(date_index) {
+			// console.log(date_index);
+			data.sort([{column: date_index, desc: true}]);
+
+			view = new google.visualization.DataView(data);
+			view.setColumns([LAT, LONG, {calc:makeTooltip, type:'string'}, date_index])
+			function makeTooltip(table, row){
+				return table.getValue(row, COUNTY) + ', ' + table.getValue(row, STATE);
+			}		
+			rows = view.getFilteredRows([{column: 3, minValue: 1}]);
+			view.setRows(rows);
+			var options = {
+				region: 'US',
+				resolution: 'provinces',
+				markerOpacity: 0.4,
+				displayMode: 'markers',
+				colorAxis: {colors: ['red', 'red']},
+				sizeAxis: {minValue: 0, maxValue: 2000, minSize: 4, maxSize: 80},
+				legend: 'none',
+				backgroundColor: 'transparent',
+				enableRegionInteractivity: true,
+			};
+			chart.draw(view, options);
+				
+			table_view = new google.visualization.DataView(data);
+			table_view.setColumns([STATE, COUNTY, {sourceColumn: date_index, label: 'cases'}]);
+			table_view.setRows(rows);
+			table.draw(table_view, {width: '100%'});
+		}
+    
+		function initSlider() {
+			slider_el = document.getElementById('time_slider');
+			slider_el.min = 0;
+			slider_el.max = num_dates - 1;
+			slider_el.value = num_dates - 1;
+			document.getElementById('update_time').innerHTML = 'Last updated ' + dates[num_dates - 1];
+			handleSlider();
+		}
+		function handleSlider() {
+			date_el = document.getElementById('date');
+			slider_el = document.getElementById('time_slider')
+			date_index = parseInt(slider_el.value);
+			// console.log(date_index);
+			date_el.innerHTML = dates[date_index];
+			draw(date_index + 4);
+		}
+
+		function play() {
+			play_el = document.getElementById('play');
+			if (!is_playing) {
+				play_el.value = 'pause';
+				is_playing = true;
+				next(-1);
+			} else {
+				play_el.value = 'play';
+				is_playing = false;
+			}
+		}
+		function next(index) {
+			if (!is_playing) {
+				return;
+			}
+			slider_el = document.getElementById('time_slider')
+			if (index < 0) {
+				index = parseInt(slider_el.value);
+				if (index + 1 == dates.length) {
+					index = 0;
+				}
+			}
+			slider_el.value = index;
+			handleSlider();
+			if (index + 1 < dates.length) {
+				setTimeout(next, 500, index + 1);
+			} else {
+				play(); // TODO: rename to togglePlay.
+			}
+		}
+		function drawTrend() {
+			// var view = new google.visualization.DataView(data);
+		}
+		function handleRegionClick(obj) {
+			console.log(obj);
+		}
+		</script>
+		<style>
+			.main {
+				margin: auto;
+				width: 1000px;
+			}
+			.slider {
+				width: 500px;
+				vertical-align: middle;
+			}
+			#chart_div {
+				margin-top: -50px;
+				margin-bottom: -30px;
+				width: 1000px;
+				height: 600px;
+			}
+			#date {
+				margin-left: 20px;
+				font-size: 1.8em;
+				font-family: monospace;
+				width: 200px;
+			}
+			.title {
+				margin-left: 20px;
+			}
+			.meta {
+				margin-left: 20px;		
+				color: #999;
+				z-index: 1;	
+				position: relative;
+			}
+			.sources {
+				float: right;
+				margin-right: 100px;	
+			}
+			.sources a {
+				color: #999 !important;
+				text-decoration: none !important;
+			}
+			#play {
+				background-color: #999; /*#4CAF50;  Green */
+				box-sizing: content-box;
+				width: 40px;
+				border: none;
+				color: white;
+				padding: 8px 25px;
+				text-align: center;
+				text-decoration: none;
+				display: inline-block;
+				outline: none;
+			}
+				
+			</style>
+		</head>
+		<body>
+			<div class='main'>
+				<h1 class='title'>Covid-19 Cases in the United States</h1>
+				<div class='meta'>
+					<span id='update_time'>Last updated </span>
+					<span class='sources'>Sources: 
+						<a href='https://nssac.bii.virginia.edu/covid-19/dashboard/' target='_blank'>UVA</a> &bull;
+						<a href='https://github.com/CSSEGISandData/COVID-19' target='_blank'>JHU</a> &bull; 
+						<a href='https://data.healthcare.gov/dataset/Geocodes-USA-with-Counties/52wv-g36k' target='_blank'>data.healthcare.gov</a> &bull; 
+						<a href='https://developers.google.com/chart' target='_blank'>Google Charts</a>
+					</span>
+				</div>
+					
+				<div id="chart_div"></div>
+				<div id='date'></div>
+				<input type="range" min="0" max="100" value="0" class='slider' id='time_slider' oninput='handleSlider()'>
+				<input id='play' type='button' onclick='play()' value='play' />
+				<div id="table_div" style="width: 900px; height: 400px; margin-top:20px;"></div>
+			</div>
+		</body>
+</html>
