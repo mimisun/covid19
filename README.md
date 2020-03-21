@@ -6,7 +6,7 @@ Currently the data only includes *confirmed cases*, which may be heavily influen
 - Webpage: https://mimisun.github.io/covid19/
 - Data: [spreadsheet](https://docs.google.com/spreadsheets/d/1jLAjzYMcsPo71qu5uBxjT_dAzj8vxZfvnTMR-Xp3-v8/)
 
-![timelapse map](http://mimisun.com/covid19_map.gif)
+![timelapse map](https://mimisun.github.io/covid19/covid19_map.gif)
 
 # Acknowledgements
 - [UVA](https://nssac.bii.virginia.edu/covid-19/dashboard/) - Main data source. UVA offers downloadable CSV files of daily case counts, and we have collected the US county-level data from those files here for time series analysis and visualization.
