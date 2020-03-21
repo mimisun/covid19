@@ -19,3 +19,6 @@ Currently the data only includes *confirmed cases*, which may be heavily influen
   - https://covidtracking.com/data/ - Number of tests performed per state and more.
   - https://github.com/beoutbreakprepared/nCoV2019 - Demographics of individual cases, collected from global sources.
 
+# Contributors
+- [Mimi Sun](https://github.com/mimisun)
+- [Marc Stogaitis](https://github.com/marcsto)
