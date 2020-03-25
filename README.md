@@ -4,7 +4,7 @@ Data and visualizations to help track the spread of COVID-19 across US counties,
 Currently the data only includes *confirmed cases*, which may be heavily influenced by the availability of testing.
 
 - Webpage: https://mimisun.github.io/covid19/
-- Data: [spreadsheet](https://docs.google.com/spreadsheets/d/1jLAjzYMcsPo71qu5uBxjT_dAzj8vxZfvnTMR-Xp3-v8/)
+- Data: [spreadsheet](https://docs.google.com/spreadsheets/d/1jLAjzYMcsPo71qu5uBxjT_dAzj8vxZfvnTMR-Xp3-v8/) (non-commercial use only)
 
 ![timelapse map](https://mimisun.github.io/covid19/covid19_map.gif)
 
