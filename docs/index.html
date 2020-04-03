@@ -107,7 +107,7 @@
 			slider_el.value = index;
 			handleSlider();
 			if (index + 1 < dates.length) {
-				setTimeout(next, 500, index + 1);
+				setTimeout(next, 0, index + 1);
 			} else {
 				play(); // TODO: rename to togglePlay.
 			}
@@ -168,6 +168,12 @@
 				text-decoration: none;
 				display: inline-block;
 				outline: none;
+			}
+			circle {
+				stroke: rgb(255, 0, 0);
+				stroke-width: 0.5;
+				fill-opacity: 0.15;
+				fill: rgb(255, 0, 0);
 			}
 				
 			</style>
